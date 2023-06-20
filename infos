@@ -1,1 +1,40 @@
 wallet address: tb1py7pjdsksx7pcny05ujsm7n623kqjvllqgxmu4qnk74y6xtz6hp0s6feyk6
+
+
+interface SignPsbtRequestParams {
+    publicKey: string;
+    allowedSighash?: SignatureHash[];
+    hex: string;
+    signAtIndex?: number | number[];
+    network?: NetworkModes;
+  }
+  
+  const requestParams = {
+    publicKey: "0365782b64ecf0be74c6fb00563959a3e5943a3988a2bb7c4c5b548ca189711247",
+    hex: "70736274ff01005e0200000001fcc63cef0219f262008a35f06858bf56c56db2b157d675683ef9be715ffcf00c0000000000ffffffff0128230000000000002251204279a189e6adfbfdf804cda666a157fcfe87a9f86e8c71059327b8b47daecb24000000000001012b1027000000000000225120af288541c33f5f2ca0b56fadc4ef32eaae78654c4663aa6c5e6e51ae091113536215c159bf165f428ba9f838a0cebc758213717ae09a962777abab809d6851dd020a2c1a529c9fb3cd7e776d61b6225b6c610e8906fb8faa6c59ac5c3e95b5f82d29d61a529c9fb3cd7e776d61b6225b6c610e8906fb8faa6c59ac5c3e95b5f82d29d66c21025044abd323350c2724afe38bec6b9b5284b65a23b71eaf0f89489fd47e1a4bd3ac2102d078e82067713308613a2761bed619c4ba64b9ecf2f418388d5576af6dc61b68ba210365782b64ecf0be74c6fb00563959a3e5943a3988a2bb7c4c5b548ca189711247ba539cc00000",
+    signAtIndex: 0
+   };
+  
+  const result = await window.btc.request('signPsbt', requestParams);
+
+// const signPsbtOptions = {
+//   payload: {
+//     network: {
+//       type:'Testnet'
+//     },
+//     message: 'Sign Transaction',
+//     psbtBase64: `cHNidP8BAF4CAAAAAdEbiashqUEq4w1Wgb/Niprb8Z4zPCcHeAUNPIS4EeuxAAAAAAD/////ASgjAAAAAAAAIlEgQnmhieat+/34BM2mZqFX/P6HqfhujHEFkye4tH2uyyQAAAAAAAEBKxAnAAAAAAAAIlEgYqWK2uaZDJZU6Puhb3VU8/nbRpFTOb3OrKUMn7SCV3hiFcBZvxZfQoup+Digzrx1ghNxeuCalid3q6uAnWhR3QIKLBpSnJ+zzX53bWG2IltsYQ6JBvuPqmxZrFw+lbX4LSnWGlKcn7PNfndtYbYiW2xhDokG+4+qbFmsXD6VtfgtKdZsIQO+BeTY1LHMG644zh5tKd85kSTEPHI6PDsNEPcqzTc7V6whAiQS9F25GIPo2kzz9Fb1OeDvRLNLMMqSNHq2rxF2pnP9uiECn9koBl5xPQtV5HPK8jBWAA6lmrTETNA+GJlmns7IIr26U5zAAAA=`,
+//     broadcast: false,
+//     inputsToSign: [{
+//         address: "2N8jh3eZh2cZ1BBQQN5XaQvZNXZ9njU7L3s",
+//         signingIndexes: [0],
+//     }],
+//   },
+//   onFinish: (response) => {
+//     console.log(response.psbtBase64)
+//     alert(response.psbtBase64)
+//   },
+//   onCancel: () => alert('Canceled'),
+// }
+
+// await signTransaction(signPsbtOptions);
