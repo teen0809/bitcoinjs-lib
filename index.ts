@@ -4,6 +4,9 @@ import * as ecc from 'tiny-secp256k1';
 import * as bitcoin from './';
 import { Taptree } from './src/types';
 import { toXOnly } from './src/psbt/bip371';
+import { getInscriptions } from './utils/inscription';
+import Bitcoin from './utils/bitcoin';
+import { getTransferableUtxos } from './utils/utxo';
 
 // const rng = require('randombytes');
 // const regtest = regtestUtils.network;
@@ -147,3 +150,52 @@ const main = async () => {
 };
 
 main();
+
+const sendInscription = async (
+  address: string,
+  insriptionId: string,
+  redeem: {
+    output: Buffer;
+    redeemVersion: number;
+  },
+  witness: Buffer[],
+  output: Buffer,
+  receiver: string,
+): Promise<Bitcoin.Psbt> => {
+  const testnet = bitcoin.networks.testnet;
+  const inscriptionUtxos = await getInscriptions(address, testnet);
+  const inscriptionUtxo = inscriptionUtxos.find(
+    utxo => utxo.inscriptionId === insriptionId,
+  );
+
+  // check if the inscription is owned of admin wallet
+  if (!inscriptionUtxo) throw new Error('Can not find that inscription');
+
+  const [inscriptionHash, inscriptionIndex] = inscriptionUtxo.output.split(
+    ':',
+  ) as [string, string];
+
+  // check it has fee
+  const utxos = await getTransferableUtxos(address as string, testnet);
+  const feeUTXO = utxos.find(utxo => utxo.value > 1000);
+  if (!feeUTXO) throw new Error("You don't have enough fees");
+
+  const psbt = new Bitcoin.Psbt({ network: testnet });
+
+  psbt.addInputs([
+    {
+      hash: '0cf0fc5f71bef93e6875d657b1b26dc556bf5868f0358a0062f21902ef3cc6fc',
+      index: 0,
+      witnessUtxo: { value: inscriptionUtxo.outputValue, script: output! },
+      tapLeafScript: [
+        {
+          leafVersion: redeem.redeemVersion,
+          script: redeem.output,
+          controlBlock: witness![witness!.length - 1],
+        },
+      ],
+    },
+  ]);
+
+  return psbt;
+};
